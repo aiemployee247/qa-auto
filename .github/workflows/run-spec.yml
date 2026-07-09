@@ -1,0 +1,66 @@
+name: Run Spec (on demand)
+
+# Dispatched by Viktor when a run is requested from the QA Review dashboard.
+# Runs a single spec (or grep pattern), optionally with full video recording,
+# and uploads the video + HTML report as artifacts that serve as run proof.
+
+on:
+  workflow_dispatch:
+    inputs:
+      spec:
+        description: "Spec path or grep pattern (e.g. projects/webtv/tests/DEMO-2-TC-1.spec.ts)"
+        required: true
+        type: string
+      video:
+        description: "Record video for every test in this run"
+        required: false
+        default: false
+        type: boolean
+      label:
+        description: "Label for this run (e.g. DEMO-2/TC-1) — shown in run name and artifact"
+        required: false
+        default: ""
+        type: string
+
+run-name: "Run ${{ inputs.label != '' && inputs.label || inputs.spec }}${{ inputs.video && ' 🎥' || '' }}"
+
+jobs:
+  run-spec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run spec
+        env:
+          WEBTV_BASE_URL: ${{ vars.WEBTV_BASE_URL }}
+          UCTV_BASE_URL: ${{ vars.UCTV_BASE_URL }}
+          PW_VIDEO: ${{ inputs.video && 'on' || 'off' }}
+        run: npx playwright test "${{ inputs.spec }}"
+
+      - name: Upload videos & traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-proof${{ inputs.label != '' && format('-{0}', inputs.label) || '' }}
+          path: test-results/
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report${{ inputs.label != '' && format('-{0}', inputs.label) || '' }}
+          path: playwright-report/
+          retention-days: 30

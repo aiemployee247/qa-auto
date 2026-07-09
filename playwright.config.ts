@@ -20,7 +20,9 @@ export default defineConfig({
   use: {
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
-    video: "retain-on-failure",
+    // PW_VIDEO=on forces video recording for every test in the run
+    // (used by the "Run Spec (on demand)" workflow when video proof is requested).
+    video: process.env.PW_VIDEO === "on" ? "on" : "retain-on-failure",
   },
   projects: [
     {
