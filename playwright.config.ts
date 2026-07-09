@@ -14,7 +14,13 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 2 : undefined,
-  reporter: [["html", { open: "never" }], ["list"]],
+  reporter: [
+    ["html", { open: "never" }],
+    // Machine-readable per-test results, shipped inside the report artifact
+    // so the QA Review dashboard can record pass/fail per test case.
+    ["json", { outputFile: "playwright-report/results.json" }],
+    ["list"],
+  ],
   timeout: 60_000,
   expect: { timeout: 10_000 },
   use: {

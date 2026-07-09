@@ -1,14 +1,15 @@
 name: Run Spec (on demand)
 
 # Dispatched by Viktor when a run is requested from the QA Review dashboard.
-# Runs a single spec (or grep pattern), optionally with full video recording,
-# and uploads the video + HTML report as artifacts that serve as run proof.
+# Runs one or more specs (space-separated), optionally with full video
+# recording, and uploads the video + HTML report (with embedded videos and
+# results.json) as artifacts that serve as run proof.
 
 on:
   workflow_dispatch:
     inputs:
       spec:
-        description: "Spec path or grep pattern (e.g. projects/webtv/tests/DEMO-2-TC-1.spec.ts)"
+        description: "One or more spec paths, space-separated (e.g. projects/webtv/tests/DEMO-2-TC-1.spec.ts projects/webtv/tests/DEMO-2-TC-3.spec.ts)"
         required: true
         type: string
       video:
@@ -46,7 +47,7 @@ jobs:
           WEBTV_BASE_URL: ${{ vars.WEBTV_BASE_URL }}
           UCTV_BASE_URL: ${{ vars.UCTV_BASE_URL }}
           PW_VIDEO: ${{ inputs.video && 'on' || 'off' }}
-        run: npx playwright test "${{ inputs.spec }}"
+        run: npx playwright test ${{ inputs.spec }}
 
       - name: Upload videos & traces
         if: always()
