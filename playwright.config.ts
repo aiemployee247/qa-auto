@@ -1,0 +1,48 @@
+import { defineConfig, devices } from "@playwright/test";
+
+/**
+ * Central Playwright config for all automatable platforms.
+ * Each Jira project / platform gets its own Playwright "project"
+ * pointing at its folder under projects/.
+ *
+ * Base URLs come from env vars so the same specs run against
+ * staging, preview, or production without code changes.
+ */
+export default defineConfig({
+  testDir: "./projects",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 1 : 0,
+  workers: process.env.CI ? 2 : undefined,
+  reporter: [["html", { open: "never" }], ["list"]],
+  timeout: 60_000,
+  expect: { timeout: 10_000 },
+  use: {
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
+    video: "retain-on-failure",
+  },
+  projects: [
+    {
+      name: "webtv",
+      testDir: "./projects/webtv/tests",
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL:
+          process.env.WEBTV_BASE_URL ||
+          "https://preview-qa-review-ae007b75.viktor.space",
+      },
+    },
+    {
+      name: "uctv",
+      testDir: "./projects/uctv/tests",
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: process.env.UCTV_BASE_URL || "",
+      },
+    },
+    // ios / android / tizen native apps are covered by manual Xray test
+    // cases (see projects/ios/README.md). Appium projects can be added
+    // here later if device automation is desired.
+  ],
+});
