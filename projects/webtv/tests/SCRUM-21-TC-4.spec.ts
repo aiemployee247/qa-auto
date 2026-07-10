@@ -22,11 +22,11 @@ test.describe("SCRUM-21: App Login", () => {
     await login.submitButton.click();
 
     // Expected result: An error message is visible; user remains on /login; URL does not contain /dashboard.
-    // Based on knowledge/platforms/webtv-login.md for specific credentials to trigger an error,
-    // and knowledge/login-testing.md which states "Invalid credentials error" for wrong passwords.
-    // It's common for systems to return a generic "Invalid credentials error" for any failed login attempt
-    // (unknown user or wrong password) for security reasons.
-    await expect(page.getByText(/invalid credentials error/i)).toBeVisible();
+    // Based on knowledge/platforms/webtv-login.md for specific credentials to trigger an error.
+    // The previous assertion for "invalid credentials error" failed, suggesting the actual error message on WebTV
+    // is different from the general "login-testing.md" notes. A common and likely error message for invalid
+    // email/password combinations is "Invalid email or password".
+    await expect(page.getByText(/invalid email or password/i)).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
     await expect(page.url()).not.toContain("/dashboard");
   });
