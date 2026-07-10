@@ -8,11 +8,15 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "noEmit": true,
-    "types": ["node"],
+    "types": ["node", "@wdio/globals/types", "expect-webdriverio", "mocha"],
     "paths": {
       "@shared/*": ["./shared/*"]
     },
     "baseUrl": "."
   },
-  "include": ["projects/**/*.ts", "shared/**/*.ts", "playwright.config.ts"]
+  "include": [
+    "projects/**/*.ts",
+    "shared/**/*.ts",
+    "playwright.config.ts"
+  ]
 }

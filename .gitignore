@@ -5,3 +5,11 @@ blob-report/
 .env
 *.local
 .DS_Store
+
+# Local mobile binaries (keep folder structure via .gitkeep)
+apps/**/*.apk
+apps/**/*.aab
+apps/**/*.ipa
+apps/**/*.app/
+apps/**/*.app
+!apps/**/.gitkeep

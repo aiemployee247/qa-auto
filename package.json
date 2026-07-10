@@ -2,18 +2,35 @@
   "name": "qa-auto",
   "version": "0.1.0",
   "private": true,
-  "description": "Cross-platform QA automation (Playwright + TypeScript). Specs are named after Jira ticket + Xray test case IDs.",
+  "description": "Cross-platform QA automation (Playwright + Appium/WebdriverIO + TypeScript). Specs are named after Jira ticket + Xray test case IDs.",
+  "type": "module",
   "scripts": {
     "test": "playwright test",
     "test:webtv": "playwright test --project=webtv",
     "test:smoke:webtv": "playwright test --project=webtv --grep @smoke",
     "test:uctv": "playwright test --project=uctv",
     "report": "playwright show-report",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "appium": "appium --port 4723",
+    "test:gstream:android": "wdio run projects/gstream/wdio.android.conf.ts",
+    "test:gstream:ios": "wdio run projects/gstream/wdio.ios.conf.ts",
+    "test:astream:android": "wdio run projects/astream/wdio.android.conf.ts",
+    "test:astream:ios": "wdio run projects/astream/wdio.ios.conf.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.57.0",
     "@types/node": "^20",
-    "typescript": "^5.6.0"
+    "@wdio/cli": "^9.12.0",
+    "@wdio/local-runner": "^9.12.0",
+    "@wdio/mocha-framework": "^9.12.0",
+    "@wdio/spec-reporter": "^9.12.0",
+    "appium": "^2.19.0",
+    "appium-uiautomator2-driver": "^4.2.0",
+    "appium-xcuitest-driver": "^9.2.0",
+    "dotenv": "^16.4.7",
+    "expect-webdriverio": "^5.2.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "webdriverio": "^9.12.0"
   }
 }
