@@ -19,15 +19,14 @@ test.describe("DEMO-2: Login form integrity", () => {
 
       // Submitting an empty form must not navigate away from the login page.
       await loginPage.submitButton.click();
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(1000); // Allow time for potential form submission/validation
       expect(page.url()).not.toContain("/dashboard");
 
-      // DEMO ONLY: intentionally broken assertion so Asad can see the failure UX.
-      // The login page has no element with this test id, so this times out and fails.
-      await expect(
-        page.getByTestId("nonexistent-success-banner"),
-        "Expected a success banner that does not exist (intentional demo failure)",
-      ).toBeVisible({ timeout: 5000 });
+      // Fix for DEMO-2 TC-3: Assert that required fields show validation messages
+      // after an empty submission, aligning with the test case description and UI analysis.
+      // The image analysis shows "❗ Please fill out this field." for empty required fields.
+      await expect(loginPage.emailInput).toHaveValidationMessage("❗ Please fill out this field.");
+      await expect(loginPage.passwordInput).toHaveValidationMessage("❗ Please fill out this field.");
     },
   );
 });
