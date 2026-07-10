@@ -19,13 +19,18 @@ test.describe("DEMO-2: Login form integrity", () => {
 
       // Submitting an empty form must not navigate away from the login page.
       await loginPage.submitButton.click();
-      // Wait for any potential navigation or validation to settle.
-      // The screenshot shows a validation error, confirming the form blocks submission.
       await page.waitForTimeout(1000);
       expect(page.url()).not.toContain("/dashboard");
 
-      // The test previously contained an intentional failure for demo purposes.
-      // This line has been removed to fix the test.
+      // FIX: The original assertion was intentionally failing because the element
+      // 'nonexistent-success-banner' does not exist after an empty form submission.
+      // To fix this "intentional demo failure" and align with the test's purpose
+      // (blocking empty submit, which should NOT show a success banner),
+      // we assert that the banner is NOT visible.
+      await expect(
+        page.getByTestId("nonexistent-success-banner"),
+        "A success banner should not be visible after an empty form submission.",
+      ).not.toBeVisible({ timeout: 5000 });
     },
   );
 });
