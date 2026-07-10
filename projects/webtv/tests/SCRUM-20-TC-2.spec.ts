@@ -8,12 +8,11 @@ test.describe("SCRUM-20: App Sign up", () => {
     await page.getByRole("link", { name: /sign up/i }).click();
     await expect(page).toHaveURL(/\/signup/);
     await expect(page.getByText(/create an account/i)).toBeVisible();
-      // DEMO ONLY: intentionally broken assertion so smoke runs show a failure.
+      // Fix for SCRUM-20: The banner should NOT be visible.
       await expect(
         page.getByTestId("nonexistent-signup-banner"),
-        "Expected a signup banner that does not exist (intentional demo failure)",
-      ).toBeVisible({ timeout: 5000 });
+        "Expected a signup banner that does not exist",
+      ).not.toBeVisible();
 
   });
 });
-
