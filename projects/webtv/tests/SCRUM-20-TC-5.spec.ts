@@ -6,14 +6,12 @@ test.describe("SCRUM-20: App Sign up", () => {
     const signup = new SignupPage(page);
     await signup.open();
     await signup.submitButton.click();
-
-    // Assert that the page remains on the signup page and does not navigate to the dashboard
-    await expect(page).toHaveURL(/.*signup/);
-    await expect(page).not.toHaveURL(/.*dashboard/);
-
-    // Verify that a validation error message is displayed for empty fields.
-    // Based on the screenshot analysis, "Please fill out this field." appears for the Email field
-    // and is a general error for empty required fields.
+    // A short wait to allow the page to process the submission and display error messages.
+    // The expect().toBeVisible() below will also implicitly wait for the element to appear.
+    await page.waitForTimeout(1000); 
+    expect(page.url()).not.toContain("/dashboard");
+    expect(page.url()).toContain("/signup");
+    // Fix: Assert that the "Please fill out this field." error message is visible after an empty submission.
     await expect(page.getByText('Please fill out this field.')).toBeVisible();
   });
 });
