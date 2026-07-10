@@ -22,12 +22,6 @@ test.describe("DEMO-2: Login form integrity", () => {
       await page.waitForTimeout(1000);
       expect(page.url()).not.toContain("/dashboard");
 
-      // DEMO ONLY: intentionally broken assertion so Asad can see the failure UX.
-      // The login page has no element with this test id, so this times out and fails.
-      await expect(
-        page.getByTestId("nonexistent-success-banner"),
-        "Expected a success banner that does not exist (intentional demo failure)",
-      ).toBeVisible({ timeout: 5000 });
     },
   );
 });
