@@ -49,8 +49,7 @@ export default defineConfig({
         baseURL: process.env.UCTV_BASE_URL || "",
       },
     },
-    // ios / android / tizen native apps are covered by manual Xray test
-    // cases (see projects/ios/README.md). Appium projects can be added
-    // here later if device automation is desired.
+    // Native apps (gstream / astream) use Appium + WebdriverIO —
+    // see projects/gstream and projects/astream (npm run test:gstream:android).
   ],
 });
