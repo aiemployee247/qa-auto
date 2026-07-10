@@ -24,6 +24,9 @@ const localAndroidCaps = {
   'appium:appActivity': '.MainActivity',
   'appium:autoGrantPermissions': true,
   'appium:newCommandTimeout': 240,
+  'appium:adbExecTimeout': 120_000,
+  'appium:androidInstallTimeout': 180_000,
+  'appium:uiautomator2ServerLaunchTimeout': 120_000,
 };
 
 const sauceAndroidCaps = {
