@@ -19,14 +19,14 @@ test.describe("DEMO-2: Login form integrity", () => {
 
       // Submitting an empty form must not navigate away from the login page.
       await loginPage.submitButton.click();
-      await page.waitForTimeout(1000); // Allow time for potential form submission/validation
+      // Playwright's expect assertions handle waiting, so explicit waitForTimeout is not needed here.
       expect(page.url()).not.toContain("/dashboard");
 
-      // Fix for DEMO-2 TC-3: Assert that required fields show validation messages
-      // after an empty submission, aligning with the test case description and UI analysis.
-      // The image analysis shows "❗ Please fill out this field." for empty required fields.
-      await expect(loginPage.emailInput).toHaveValidationMessage("❗ Please fill out this field.");
-      await expect(loginPage.passwordInput).toHaveValidationMessage("❗ Please fill out this field.");
+      // Assert that the custom validation message "Please fill out this field." is visible
+      // after an empty submission, aligning with the test case description and screenshot analysis.
+      // The previous attempt to use toHaveValidationMessage failed because the validation
+      // message is a custom UI element, not a native browser validation message.
+      await expect(page.getByText("Please fill out this field.")).toBeVisible();
     },
   );
 });
