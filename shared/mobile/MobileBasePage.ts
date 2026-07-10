@@ -54,7 +54,12 @@ export abstract class MobileBasePage {
 
   protected async waitForId(id: string, timeout = 30_000): Promise<void> {
     const el = await this.elementById(id);
-    await el.waitForDisplayed({ timeout });
+    await el.waitForExist({ timeout });
+    // iOS RN container testIDs (e.g. login-screen) often report visible=false
+    // even when on-screen; only enforce displayed on Android.
+    if (this.isAndroid) {
+      await el.waitForDisplayed({ timeout });
+    }
   }
 
   protected async hideKeyboardSafe(): Promise<void> {
@@ -80,7 +85,35 @@ export abstract class MobileBasePage {
         ]);
         await this.driver.releaseActions();
       } else {
-        await this.driver.execute('mobile: hideKeyboard', {});
+        // Prefer the keyboard accessory "Done" button when present.
+        const done = this.driver.$('~Done');
+        if (await done.isExisting().catch(() => false)) {
+          await done.click();
+          return;
+        }
+        try {
+          await this.driver.execute('mobile: hideKeyboard', {});
+        } catch {
+          const { width, height } = await this.driver.getWindowSize();
+          await this.driver.performActions([
+            {
+              type: 'pointer',
+              id: 'finger1',
+              parameters: { pointerType: 'touch' },
+              actions: [
+                {
+                  type: 'pointerMove',
+                  duration: 0,
+                  x: Math.floor(width / 2),
+                  y: Math.floor(height * 0.12),
+                },
+                { type: 'pointerDown', button: 0 },
+                { type: 'pointerUp', button: 0 },
+              ],
+            },
+          ]);
+          await this.driver.releaseActions();
+        }
       }
     } catch {
       // Keyboard may already be dismissed.
@@ -106,11 +139,24 @@ export abstract class MobileBasePage {
       return;
     }
 
+    // iOS: element setValue/clearValue often skips React Native onChangeText.
+    // W3C key actions (char-by-char) update controlled inputs reliably.
     const el = await this.elementById(id);
-    await el.waitForDisplayed({ timeout: 30_000 });
+    await el.waitForExist({ timeout: 30_000 });
     await el.click();
-    await el.clearValue();
-    await el.setValue(value);
+    try {
+      await el.clearValue();
+    } catch {
+      // ignore
+    }
+    const keyActions = value.split('').flatMap((ch) => [
+      { type: 'keyDown' as const, value: ch },
+      { type: 'keyUp' as const, value: ch },
+    ]);
+    await this.driver.performActions([
+      { type: 'key', id: 'keyboard', actions: keyActions },
+    ]);
+    await this.driver.releaseActions();
   }
 
   protected async tapById(id: string): Promise<void> {
@@ -123,8 +169,15 @@ export abstract class MobileBasePage {
       return;
     }
     const el = await this.elementById(id);
-    await el.waitForDisplayed({ timeout: 30_000 });
-    await el.click();
+    await el.waitForExist({ timeout: 30_000 });
+    // If keyboard covers the control, tap "Done" / dismiss first then retry.
+    try {
+      await el.click();
+    } catch {
+      await this.hideKeyboardSafe();
+      const again = await this.elementById(id);
+      await again.click();
+    }
   }
 
   // Back-compat wrappers used by existing page objects.

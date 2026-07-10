@@ -4,6 +4,12 @@ export class AStreamHomePage extends MobileBasePage {
   get screen() {
     return this.byId('home-screen');
   }
+  get heading() {
+    return this.byId('home-heading');
+  }
+  get userName() {
+    return this.byId('home-user-name');
+  }
   get userEmail() {
     return this.byId('home-user-email');
   }
@@ -12,10 +18,12 @@ export class AStreamHomePage extends MobileBasePage {
   }
 
   async waitForReady() {
-    await this.waitForDisplayed(this.screen);
+    // Prefer child nodes — home-screen container can be visible=false on iOS.
+    await this.waitForId('home-heading');
+    await this.waitForId('home-user-email');
   }
 
   async logout() {
-    await this.tap(this.logoutButton);
+    await this.tapById('home-logout');
   }
 }

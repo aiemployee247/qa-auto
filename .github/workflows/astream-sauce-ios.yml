@@ -1,0 +1,157 @@
+name: AStream iOS (Sauce Labs)
+
+# Runs AStream Appium iOS login/signup specs on Sauce Labs.
+# Requires repo secrets: SAUCE_USERNAME, SAUCE_ACCESS_KEY
+# Optional repo var: ASTREAM_SAUCE_APP (default: latest astream.ipa in Sauce Storage)
+#
+# "Latest app" resolution order:
+#   1. inputs.sauce_app (storage:filename=... or storage:<file_id>)
+#   2. Upload from inputs.ipa_url → storage:filename=astream.ipa
+#   3. vars.ASTREAM_SAUCE_APP
+#   4. Newest Sauce Storage file named astream.ipa
+#   5. Fallback storage:filename=astream.ipa
+
+on:
+  workflow_dispatch:
+    inputs:
+      sauce_app:
+        description: "Sauce Storage app (storage:filename=... or storage:<id>). Leave empty to use latest astream.ipa"
+        required: false
+        default: ""
+        type: string
+      ipa_url:
+        description: "Optional HTTPS URL to download + upload as the latest astream.ipa"
+        required: false
+        default: ""
+        type: string
+      device_name:
+        description: "Sauce iOS device / simulator name"
+        required: false
+        default: "iPhone 15 Simulator"
+        type: string
+      platform_version:
+        description: "iOS platform version"
+        required: false
+        default: "17.0"
+        type: string
+      appium_version:
+        description: "Sauce Appium version"
+        required: false
+        default: "2.0.0"
+        type: string
+
+run-name: "AStream iOS @ Sauce (${{ inputs.device_name }} / ${{ inputs.platform_version }})"
+
+jobs:
+  astream-ios:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Resolve / upload latest AStream IPA on Sauce
+        id: sauce_app
+        env:
+          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+          INPUT_SAUCE_APP: ${{ inputs.sauce_app }}
+          INPUT_IPA_URL: ${{ inputs.ipa_url }}
+          VAR_SAUCE_APP: ${{ vars.ASTREAM_SAUCE_APP }}
+          SAUCE_API: https://api.us-west-1.saucelabs.com
+        run: |
+          set -euo pipefail
+
+          if [ -z "${SAUCE_USERNAME:-}" ] || [ -z "${SAUCE_ACCESS_KEY:-}" ]; then
+            echo "::error::Missing SAUCE_USERNAME or SAUCE_ACCESS_KEY secrets"
+            exit 1
+          fi
+
+          AUTH=(-u "${SAUCE_USERNAME}:${SAUCE_ACCESS_KEY}")
+
+          resolve_latest_astream_ipa() {
+            # Newest file whose name is exactly astream.ipa
+            curl -fsS "${AUTH[@]}" \
+              "${SAUCE_API}/v1/storage/files?q[name]=astream.ipa&per_page=20" \
+              -o /tmp/sauce-files.json
+            python3 - <<'PY'
+          import json, sys
+          data = json.load(open("/tmp/sauce-files.json"))
+          files = data.get("items") or data.get("files") or []
+          if not files:
+              files = (data.get("data") or {}).get("files") or []
+          matches = [f for f in files if f.get("name") == "astream.ipa"]
+          if not matches:
+              sys.exit(2)
+          def sort_key(f):
+              return str(f.get("uploaded") or f.get("created_at") or f.get("id") or "")
+          matches.sort(key=sort_key, reverse=True)
+          file_id = matches[0].get("id") or matches[0].get("file_id")
+          if not file_id:
+              sys.exit(3)
+          print(f"storage:{file_id}")
+          PY
+          }
+
+          APP=""
+
+          if [ -n "${INPUT_SAUCE_APP}" ]; then
+            APP="${INPUT_SAUCE_APP}"
+            echo "Using workflow input sauce_app"
+          elif [ -n "${INPUT_IPA_URL}" ]; then
+            echo "Downloading IPA from URL…"
+            curl -fL --retry 3 -o /tmp/astream.ipa "${INPUT_IPA_URL}"
+            ls -lh /tmp/astream.ipa
+            echo "Uploading to Sauce Storage as astream.ipa…"
+            UPLOAD_JSON=$(curl -fsS "${AUTH[@]}" \
+              -X POST "${SAUCE_API}/v1/storage/upload" \
+              -F "payload=@/tmp/astream.ipa" \
+              -F "name=astream.ipa")
+            echo "$UPLOAD_JSON" | python3 -m json.tool || echo "$UPLOAD_JSON"
+            FILE_ID=$(echo "$UPLOAD_JSON" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("item",d).get("id") or d.get("id") or "")')
+            if [ -n "$FILE_ID" ]; then
+              APP="storage:${FILE_ID}"
+            else
+              APP="storage:filename=astream.ipa"
+            fi
+            echo "Uploaded latest IPA → $APP"
+          elif [ -n "${VAR_SAUCE_APP}" ]; then
+            APP="${VAR_SAUCE_APP}"
+            echo "Using repo variable ASTREAM_SAUCE_APP"
+          else
+            echo "Looking up newest astream.ipa in Sauce Storage…"
+            if APP=$(resolve_latest_astream_ipa); then
+              echo "Resolved latest storage file → $APP"
+            else
+              echo "::warning::Could not resolve latest astream.ipa; falling back to storage:filename=astream.ipa"
+              APP="storage:filename=astream.ipa"
+            fi
+          fi
+
+          echo "app=${APP}" >> "$GITHUB_OUTPUT"
+          echo "Resolved Sauce app: ${APP}"
+
+      - name: Run AStream iOS on Sauce
+        env:
+          APPIUM_PROVIDER: sauce
+          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+          ASTREAM_SAUCE_APP: ${{ steps.sauce_app.outputs.app }}
+          SAUCE_DEVICE_NAME: ${{ inputs.device_name }}
+          SAUCE_PLATFORM_VERSION: ${{ inputs.platform_version }}
+          SAUCE_APPIUM_VERSION: ${{ inputs.appium_version }}
+          SAUCE_BUILD: astream-ios-gha-${{ github.run_id }}-${{ github.run_attempt }}
+          ASTREAM_BUNDLE_ID: com.astream.auth
+        run: |
+          set -euo pipefail
+          echo "Sauce app: $ASTREAM_SAUCE_APP"
+          echo "Device: $SAUCE_DEVICE_NAME ($SAUCE_PLATFORM_VERSION)"
+          echo "Appium: $SAUCE_APPIUM_VERSION"
+          echo "Build: $SAUCE_BUILD"
+          npm run test:astream:ios

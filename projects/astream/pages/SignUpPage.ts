@@ -1,6 +1,5 @@
 import { MobileBasePage } from '@shared/mobile/MobileBasePage';
 
-/** Placeholder page object — wire selectors when AStream app ships. */
 export class AStreamSignUpPage extends MobileBasePage {
   get screen() {
     return this.byId('signup-screen');
@@ -23,9 +22,13 @@ export class AStreamSignUpPage extends MobileBasePage {
   get errorMessage() {
     return this.byId('signup-error');
   }
+  get goToLogin() {
+    return this.byId('signup-goto-login');
+  }
 
   async waitForReady() {
-    await this.waitForDisplayed(this.screen);
+    await this.waitForId('signup-screen');
+    await this.waitForId('signup-name');
   }
 
   async signUp(
@@ -34,10 +37,19 @@ export class AStreamSignUpPage extends MobileBasePage {
     password: string,
     confirmPassword = password,
   ) {
-    await this.setValue(this.nameInput, name);
-    await this.setValue(this.emailInput, email);
-    await this.setValue(this.passwordInput, password);
-    await this.setValue(this.confirmPasswordInput, confirmPassword);
-    await this.tap(this.submitButton);
+    await this.setValueById('signup-name', name);
+    await this.setValueById('signup-email', email);
+    try {
+      const toggle = await this.elementById('signup-password-toggle');
+      await toggle.click();
+    } catch {
+      // optional
+    }
+    await this.setValueById('signup-password', password);
+    await this.setValueById('signup-confirm-password', confirmPassword);
+    // On iOS, dismiss/scroll can drop signup-submit from the a11y tree.
+    // Tap it directly (works even when visible=false under the keyboard).
+    const submit = await this.elementById('signup-submit');
+    await submit.click();
   }
 }

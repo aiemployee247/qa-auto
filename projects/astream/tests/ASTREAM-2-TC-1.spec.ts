@@ -1,16 +1,26 @@
 /**
- * AStream — Login (scaffold)
+ * AStream — Login validation + happy path (iOS)
  * Jira: ASTREAM-2 — Xray TC-1 / TC-2
  */
 describe('ASTREAM-2: Login', () => {
-  before(function () {
-    const hasApp =
-      process.env.ASTREAM_ANDROID_APP ||
-      process.env.ASTREAM_IOS_APP ||
-      process.env.ASTREAM_SAUCE_APP;
-    if (!hasApp) {
-      this.skip();
+  beforeEach(async () => {
+    const platform = String(browser.capabilities.platformName || '').toLowerCase();
+    if (platform === 'ios') {
+      await browser.execute('mobile: terminateApp', {
+        bundleId: 'com.astream.auth',
+      });
+      await browser.execute('mobile: activateApp', {
+        bundleId: 'com.astream.auth',
+      });
+    } else {
+      await browser.execute('mobile: clearApp', {
+        appId: 'com.astream.auth',
+      });
+      await browser.execute('mobile: activateApp', {
+        appId: 'com.astream.auth',
+      });
     }
+    await browser.pause(1500);
   });
 
   it('TC-1: invalid credentials show an error and do not sign in', async () => {
@@ -22,8 +32,9 @@ describe('ASTREAM-2: Login', () => {
 
     await login.waitForReady();
     await login.login('wrong-user@test.local', 'definitely-wrong');
+
     await expect(login.errorMessage).toBeDisplayed();
-    await expect(home.screen).not.toBeDisplayed();
+    await expect(home.heading).not.toBeExisting();
   });
 
   it('TC-2: valid credentials sign in and show home', async () => {
