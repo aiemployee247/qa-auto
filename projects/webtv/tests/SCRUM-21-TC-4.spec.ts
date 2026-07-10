@@ -23,8 +23,10 @@ test.describe("SCRUM-21: App Login", () => {
 
     // Expected result: An error message is visible; user remains on /login; URL does not contain /dashboard.
     // Based on knowledge/platforms/webtv-login.md for specific credentials to trigger an error,
-    // and knowledge/login-testing.md which states "User not found error" for unknown users.
-    await expect(page.getByText(/user not found error/i)).toBeVisible();
+    // and knowledge/login-testing.md which states "Invalid credentials error" for wrong passwords.
+    // It's common for systems to return a generic "Invalid credentials error" for any failed login attempt
+    // (unknown user or wrong password) for security reasons.
+    await expect(page.getByText(/invalid credentials error/i)).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
     await expect(page.url()).not.toContain("/dashboard");
   });
