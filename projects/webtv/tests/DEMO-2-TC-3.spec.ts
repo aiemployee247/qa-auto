@@ -6,26 +6,28 @@ import { LoginPage } from "../pages/LoginPage";
  * Login form renders all required fields and blocks empty submission.
  */
 test.describe("DEMO-2: Login form integrity", () => {
-  test("TC-3: login form shows required fields and blocks empty submit", async ({
-    page,
-  }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.open();
+  test(
+    "TC-3: login form shows required fields and blocks empty submit",
+    { tag: "@smoke" },
+    async ({ page }) => {
+      const loginPage = new LoginPage(page);
+      await loginPage.open();
 
-    await expect(loginPage.emailInput).toBeVisible();
-    await expect(loginPage.passwordInput).toBeVisible();
-    await expect(loginPage.submitButton).toBeVisible();
+      await expect(loginPage.emailInput).toBeVisible();
+      await expect(loginPage.passwordInput).toBeVisible();
+      await expect(loginPage.submitButton).toBeVisible();
 
-    // Submitting an empty form must not navigate away from the login page.
-    await loginPage.submitButton.click();
-    await page.waitForTimeout(1000);
-    expect(page.url()).not.toContain("/dashboard");
+      // Submitting an empty form must not navigate away from the login page.
+      await loginPage.submitButton.click();
+      await page.waitForTimeout(1000);
+      expect(page.url()).not.toContain("/dashboard");
 
-    // DEMO ONLY: intentionally broken assertion so Asad can see the failure UX.
-    // The login page has no element with this test id, so this times out and fails.
-    await expect(
-      page.getByTestId("nonexistent-success-banner"),
-      "Expected a success banner that does not exist (intentional demo failure)",
-    ).toBeVisible({ timeout: 5000 });
-  });
+      // DEMO ONLY: intentionally broken assertion so Asad can see the failure UX.
+      // The login page has no element with this test id, so this times out and fails.
+      await expect(
+        page.getByTestId("nonexistent-success-banner"),
+        "Expected a success banner that does not exist (intentional demo failure)",
+      ).toBeVisible({ timeout: 5000 });
+    },
+  );
 });
