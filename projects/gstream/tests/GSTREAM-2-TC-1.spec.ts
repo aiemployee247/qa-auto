@@ -3,6 +3,27 @@
  * Jira: GSTREAM-2 — Xray TC-1 / TC-2
  */
 describe('GSTREAM-2: Login', () => {
+  beforeEach(async () => {
+    // Fresh app state between cases (shared WDIO session).
+    const platform = String(browser.capabilities.platformName || '').toLowerCase();
+    if (platform === 'ios') {
+      await browser.execute('mobile: terminateApp', {
+        bundleId: 'com.gstream.auth',
+      });
+      await browser.execute('mobile: activateApp', {
+        bundleId: 'com.gstream.auth',
+      });
+    } else {
+      await browser.execute('mobile: clearApp', {
+        appId: 'com.gstream.auth',
+      });
+      await browser.execute('mobile: activateApp', {
+        appId: 'com.gstream.auth',
+      });
+    }
+    await browser.pause(1500);
+  });
+
   it('TC-1: invalid credentials show an error and do not sign in', async () => {
     const { GStreamLoginPage } = await import('../pages/LoginPage');
     const { GStreamHomePage } = await import('../pages/HomePage');
@@ -14,7 +35,7 @@ describe('GSTREAM-2: Login', () => {
     await login.login('wrong-user@test.local', 'definitely-wrong');
 
     await expect(login.errorMessage).toBeDisplayed();
-    await expect(home.screen).not.toBeDisplayed();
+    await expect(home.heading).not.toBeExisting();
   });
 
   it('TC-2: valid credentials sign in and show home', async () => {

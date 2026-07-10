@@ -37,28 +37,31 @@ npm run report
 npx appium driver install uiautomator2
 npx appium driver install xcuitest
 
-# Put binaries in apps/ (or set paths in .env)
-# Prefer a release/offline APK so the app does not wait on Metro:
-#   apps/gstream/android/app-release.apk
-#   apps/gstream/ios/GStream.app   # simulator .app for now; IPA later for Sauce
+# Binaries (gitignored under apps/)
+#   Android GStream: apps/gstream/android/app-release.apk
+#   iOS AStream:     apps/astream/ios/AStream.app
 
 # Terminal 1
 npm run appium
 
 # Terminal 2 — emulator/simulator must be running
-npm run test:gstream:android
-npm run test:gstream:ios
+npm run test:gstream:android   # GStream (Android)
+npm run test:astream:ios       # AStream (iOS)
 ```
 
 ### Sauce Labs (next)
 
-1. Upload the APK/IPA to Sauce Storage.
-2. In `.env`:
+1. Upload the APK/IPA to Sauce Storage (`gstream.apk` / `astream.ipa`).
+2. In `.env` or GitHub Actions:
    - `APPIUM_PROVIDER=sauce`
    - `SAUCE_USERNAME` / `SAUCE_ACCESS_KEY`
-   - `GSTREAM_SAUCE_APP=storage:filename=gstream.apk` (or the returned storage id)
+   - `GSTREAM_SAUCE_APP` or `ASTREAM_SAUCE_APP` (`storage:filename=...` or `storage:<id>`)
    - optional: `SAUCE_DEVICE_NAME`, `SAUCE_PLATFORM_VERSION`, `SAUCE_BUILD`
-3. Run the same npm scripts (`test:gstream:android` / `test:gstream:ios`).
+3. Local: `npm run test:gstream:android` / `npm run test:astream:ios`
+4. CI (manual):
+   - **GStream Android:** Actions → `GStream Android (Sauce Labs)`
+   - **AStream iOS:** Actions → `AStream iOS (Sauce Labs)`  
+     Uses the latest `astream.ipa` in Sauce Storage, or upload via `ipa_url` input.
 
 ## Conventions
 

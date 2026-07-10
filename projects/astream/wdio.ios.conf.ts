@@ -15,10 +15,10 @@ const isSauce = process.env.APPIUM_PROVIDER === 'sauce';
 const localIosCaps = {
   platformName: 'iOS',
   'appium:automationName': 'XCUITest',
-  'appium:deviceName': process.env.IOS_DEVICE_NAME || 'iPhone 17',
+  'appium:deviceName': process.env.IOS_DEVICE_NAME || 'GStream_iPhone',
   'appium:platformVersion': process.env.IOS_PLATFORM_VERSION || '26.5',
   'appium:app': resolveAppPath('ASTREAM_IOS_APP', 'apps/astream/ios/AStream.app'),
-  'appium:bundleId': process.env.ASTREAM_BUNDLE_ID || 'com.astream.auth',
+  'appium:bundleId': 'com.astream.auth',
   'appium:autoAcceptAlerts': true,
   'appium:newCommandTimeout': 240,
 };
@@ -29,9 +29,13 @@ const sauceIosCaps = {
   'appium:app': process.env.ASTREAM_SAUCE_APP || 'storage:filename=astream.ipa',
   'appium:deviceName': process.env.SAUCE_DEVICE_NAME || 'iPhone 15 Simulator',
   'appium:platformVersion': process.env.SAUCE_PLATFORM_VERSION || '17.0',
+  'appium:bundleId': process.env.ASTREAM_BUNDLE_ID || 'com.astream.auth',
+  'appium:autoAcceptAlerts': true,
+  'appium:newCommandTimeout': 240,
   'sauce:options': {
     name: 'astream-ios',
     build: process.env.SAUCE_BUILD || `astream-${Date.now()}`,
+    appiumVersion: process.env.SAUCE_APPIUM_VERSION || '2.0.0',
   },
 };
 

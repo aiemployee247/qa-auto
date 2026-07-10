@@ -39,8 +39,17 @@ export class GStreamSignUpPage extends MobileBasePage {
   ) {
     await this.setValueById('signup-name', name);
     await this.setValueById('signup-email', email);
+    try {
+      const toggle = await this.elementById('signup-password-toggle');
+      await toggle.click();
+    } catch {
+      // optional
+    }
     await this.setValueById('signup-password', password);
     await this.setValueById('signup-confirm-password', confirmPassword);
-    await this.tapById('signup-submit');
+    // On iOS, dismiss/scroll can drop signup-submit from the a11y tree.
+    // Tap it directly (works even when visible=false under the keyboard).
+    const submit = await this.elementById('signup-submit');
+    await submit.click();
   }
 }

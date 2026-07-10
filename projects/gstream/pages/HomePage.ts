@@ -18,8 +18,9 @@ export class GStreamHomePage extends MobileBasePage {
   }
 
   async waitForReady() {
-    await this.waitForId('home-screen');
+    // Prefer child nodes — home-screen container can be visible=false on iOS.
     await this.waitForId('home-heading');
+    await this.waitForId('home-user-email');
   }
 
   async logout() {
