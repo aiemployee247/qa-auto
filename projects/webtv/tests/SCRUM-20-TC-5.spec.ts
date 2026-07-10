@@ -6,12 +6,16 @@ test.describe("SCRUM-20: App Sign up", () => {
     const signup = new SignupPage(page);
     await signup.open();
     await signup.submitButton.click();
-    // A short wait to allow the page to process the submission and display error messages.
-    // The expect().toBeVisible() below will also implicitly wait for the element to appear.
-    await page.waitForTimeout(1000); 
+    // Removed await page.waitForTimeout(1000); as it's a brittle hard wait.
+    // Playwright's assertions have auto-retry.
+
     expect(page.url()).not.toContain("/dashboard");
     expect(page.url()).toContain("/signup");
-    // Fix: Assert that the "Please fill out this field." error message is visible after an empty submission.
-    await expect(page.getByText('Please fill out this field.')).toBeVisible();
+
+    // The previous attempt failed because 'Please fill out this field.' was not visible.
+    // The screenshot analysis confirms it should be visible after submission.
+    // This suggests a timing issue where the error message takes longer to appear.
+    // Increasing the timeout for this specific assertion to allow for rendering.
+    await expect(page.getByText('Please fill out this field.')).toBeVisible({ timeout: 10000 });
   });
 });
