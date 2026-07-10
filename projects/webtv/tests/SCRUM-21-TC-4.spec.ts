@@ -12,17 +12,19 @@ test.describe("SCRUM-21: App Login", () => {
     // 1. Open https://preview-qa-review-ae007b75.viktor.space/login
     await login.open();
 
-    // 2. Enter test@example.com in email field (as per knowledge/login-testing.md for "Invalid credentials error")
-    await login.emailInput.fill("test@example.com");
+    // 2. Enter wrong@example.com in email field (as per knowledge/platforms/webtv-login.md for "Error shown")
+    await login.emailInput.fill("wrong@example.com");
 
-    // 3. Enter wrong in password field (as per knowledge/login-testing.md for "Invalid credentials error")
-    await login.passwordInput.fill("wrong");
+    // 3. Enter wrongpass in password field (as per knowledge/platforms/webtv-login.md for "Error shown")
+    await login.passwordInput.fill("wrongpass");
 
     // 4. Submit sign in
     await login.submitButton.click();
 
     // Expected result: An error message is visible; user remains on /login; URL does not contain /dashboard.
-    await expect(page.getByText(/invalid credentials error/i)).toBeVisible();
+    // Based on knowledge/platforms/webtv-login.md for specific credentials to trigger an error,
+    // and knowledge/login-testing.md which states "User not found error" for unknown users.
+    await expect(page.getByText(/user not found error/i)).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
     await expect(page.url()).not.toContain("/dashboard");
   });
