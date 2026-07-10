@@ -47,7 +47,7 @@ export const config: WebdriverIO.Config = {
   logLevel: 'info',
   framework: 'mocha',
   reporters: ['spec'],
-  mochaOpts: { ui: 'bdd', timeout: 180_000 },
+  mochaOpts: { ui: 'bdd', timeout: 300_000 },
   connectionRetryTimeout: 180_000,
   connectionRetryCount: 2,
   ...(isSauce

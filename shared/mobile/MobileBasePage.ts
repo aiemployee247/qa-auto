@@ -25,7 +25,8 @@ export abstract class MobileBasePage {
   /**
    * On Android, RN ScrollView drops off-screen nodes from the a11y tree.
    * UiScrollable.scrollIntoView brings them back and returns the element.
-   * On iOS, off-screen ScrollView children are also often missing — swipe/scroll first.
+   * On iOS, prefer a direct lookup — callers that need scroll should swipe explicitly
+   * (mobile:scroll loops are too slow on Sauce and blow mocha timeouts).
    */
   protected async elementById(id: string): Promise<WebdriverIO.Element> {
     if (this.isAndroid) {
@@ -42,53 +43,45 @@ export abstract class MobileBasePage {
       )) as unknown as WebdriverIO.Element;
     }
 
-    const direct = this.byId(id);
-    if (await direct.isExisting().catch(() => false)) {
-      return direct as unknown as WebdriverIO.Element;
-    }
-
-    for (let i = 0; i < 5; i++) {
-      try {
-        await this.driver.execute('mobile: scroll', {
-          direction: 'down',
-          predicateString: `name == "${id}" OR label == "${id}"`,
-        });
-      } catch {
-        const { width, height } = await this.driver.getWindowSize();
-        await this.driver.performActions([
-          {
-            type: 'pointer',
-            id: 'finger1',
-            parameters: { pointerType: 'touch' },
-            actions: [
-              {
-                type: 'pointerMove',
-                duration: 0,
-                x: Math.floor(width / 2),
-                y: Math.floor(height * 0.7),
-              },
-              { type: 'pointerDown', button: 0 },
-              {
-                type: 'pointerMove',
-                duration: 350,
-                x: Math.floor(width / 2),
-                y: Math.floor(height * 0.35),
-              },
-              { type: 'pointerUp', button: 0 },
-            ],
-          },
-        ]);
-        await this.driver.releaseActions();
-      }
-      await this.driver.pause(250);
-      if (await this.byId(id).isExisting().catch(() => false)) {
-        return this.byId(id) as unknown as WebdriverIO.Element;
-      }
-    }
-
     const el = this.byId(id);
-    await el.waitForExist({ timeout: 15_000 });
+    await el.waitForExist({ timeout: 30_000 });
     return el as unknown as WebdriverIO.Element;
+  }
+
+  /** Swipe up a few times until id appears (or give up). Birthdate is optional. */
+  protected async revealBySwipe(id: string, maxSwipes = 4): Promise<boolean> {
+    for (let i = 0; i < maxSwipes; i++) {
+      if (await this.byId(id).isExisting().catch(() => false)) {
+        return true;
+      }
+      const { width, height } = await this.driver.getWindowSize();
+      await this.driver.performActions([
+        {
+          type: 'pointer',
+          id: 'finger1',
+          parameters: { pointerType: 'touch' },
+          actions: [
+            {
+              type: 'pointerMove',
+              duration: 0,
+              x: Math.floor(width / 2),
+              y: Math.floor(height * 0.7),
+            },
+            { type: 'pointerDown', button: 0 },
+            {
+              type: 'pointerMove',
+              duration: 350,
+              x: Math.floor(width / 2),
+              y: Math.floor(height * 0.3),
+            },
+            { type: 'pointerUp', button: 0 },
+          ],
+        },
+      ]);
+      await this.driver.releaseActions();
+      await this.driver.pause(350);
+    }
+    return this.byId(id).isExisting().catch(() => false);
   }
 
   protected async waitForDisplayed(

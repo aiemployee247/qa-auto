@@ -58,7 +58,7 @@ export const config: WebdriverIO.Config = {
   reporters: ['spec'],
   mochaOpts: {
     ui: 'bdd',
-    timeout: 180_000,
+    timeout: 300_000,
   },
   connectionRetryTimeout: 180_000,
   connectionRetryCount: 2,

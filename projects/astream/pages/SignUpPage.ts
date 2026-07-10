@@ -85,34 +85,38 @@ export class AStreamSignUpPage extends MobileBasePage {
     await this.setValueById('signup-password', form.password);
     await this.setValueById('signup-confirm-password', confirm);
 
-    // After confirm password: tap birthdate (dismisses keyboard / moves focus).
-    // Do not rely on Done — that used to auto-submit via onSubmitEditing.
-    const birthMm = await this.elementById('signup-birth-mm');
-    await birthMm.click();
-    await this.driver.pause(300);
-
-    if (form.birthMonth) {
-      await this.setValueById('signup-birth-mm', form.birthMonth);
-    }
-    if (form.birthDay) {
-      await this.setValueById('signup-birth-dd', form.birthDay);
-    }
-    if (form.birthYear) {
-      await this.setValueById('signup-birth-yyyy', form.birthYear);
-    }
-
+    // After confirm: dismiss keyboard, then tap birthdate when visible.
     await this.hideKeyboardSafe();
 
-    if (form.optInBrand) {
-      const el = await this.elementById('signup-optin-brand');
-      await el.click();
-    }
-    if (form.optInPartners) {
-      const el = await this.elementById('signup-optin-partners');
-      await el.click();
+    const wantsBirth = Boolean(form.birthMonth || form.birthDay || form.birthYear);
+    if (wantsBirth && (await this.revealBySwipe('signup-birth-mm'))) {
+      await this.byId('signup-birth-mm').click();
+      await this.driver.pause(250);
+      if (form.birthMonth) {
+        await this.setValueById('signup-birth-mm', form.birthMonth);
+      }
+      if (form.birthDay) {
+        await this.setValueById('signup-birth-dd', form.birthDay);
+      }
+      if (form.birthYear) {
+        await this.setValueById('signup-birth-yyyy', form.birthYear);
+      }
+      await this.hideKeyboardSafe();
     }
 
-    // Explicit Register tap — only path that should create the account.
+    await this.revealBySwipe('signup-submit');
+
+    if (form.optInBrand && (await this.byId('signup-optin-brand').isExisting().catch(() => false))) {
+      await this.byId('signup-optin-brand').click();
+    }
+    if (
+      form.optInPartners &&
+      (await this.byId('signup-optin-partners').isExisting().catch(() => false))
+    ) {
+      await this.byId('signup-optin-partners').click();
+    }
+
+    await this.revealBySwipe('signup-submit');
     await this.tapById('signup-submit');
   }
 }

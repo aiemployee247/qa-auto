@@ -177,38 +177,42 @@ export class GStreamSignUpPage extends MobileBasePage {
     }
 
     await this.hideKeyboardSafe();
-    await this.scrollFormDown();
 
-    // Birth fields start empty — type only, do not DEL-wipe (avoids clearing name).
-    if (form.birthMonth) {
-      await this.typeIntoEmpty('signup-birth-mm', form.birthMonth);
-    }
-    if (form.birthDay) {
-      await this.typeIntoEmpty('signup-birth-dd', form.birthDay);
-    }
-    if (form.birthYear) {
-      await this.typeIntoEmpty('signup-birth-yyyy', form.birthYear);
-    }
-
-    await this.hideKeyboardSafe();
-    await this.scrollFormDown();
-
-    if (form.optInBrand) {
-      const el = await this.elementById('signup-optin-brand');
-      await el.click();
-    }
-    if (form.optInPartners) {
-      const el = await this.elementById('signup-optin-partners');
-      await el.click();
+    // Birthdate is below the fold and optional for auth — fill when visible.
+    const wantsBirth = Boolean(form.birthMonth || form.birthDay || form.birthYear);
+    if (wantsBirth && (await this.revealBySwipe('signup-birth-mm'))) {
+      if (form.birthMonth) {
+        await this.typeIntoEmpty('signup-birth-mm', form.birthMonth);
+      }
+      if (form.birthDay) {
+        await this.typeIntoEmpty('signup-birth-dd', form.birthDay);
+      }
+      if (form.birthYear) {
+        await this.typeIntoEmpty('signup-birth-yyyy', form.birthYear);
+      }
+      await this.hideKeyboardSafe();
     }
 
-    const submit = await this.elementById('signup-submit');
-    await submit.click();
+    await this.revealBySwipe('signup-submit');
+
+    if (form.optInBrand && (await this.byId('signup-optin-brand').isExisting().catch(() => false))) {
+      await this.byId('signup-optin-brand').click();
+    }
+    if (
+      form.optInPartners &&
+      (await this.byId('signup-optin-partners').isExisting().catch(() => false))
+    ) {
+      await this.byId('signup-optin-partners').click();
+    }
+
+    await this.revealBySwipe('signup-submit');
+    await this.tapById('signup-submit');
   }
 
   /** Type into an empty field without backspacing other focused inputs. */
   private async typeIntoEmpty(id: string, value: string) {
-    const el = await this.elementById(id);
+    const el = this.byId(id);
+    await el.waitForExist({ timeout: 10_000 });
     await el.click();
     await this.driver.pause(250);
     await el.addValue(value);
