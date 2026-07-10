@@ -6,15 +6,14 @@ test.describe("SCRUM-20: App Sign up", () => {
     const signup = new SignupPage(page);
     await signup.open();
     await signup.submitButton.click();
-    await page.waitForTimeout(1000);
-    expect(page.url()).not.toContain("/dashboard");
-    expect(page.url()).toContain("/signup");
-      // DEMO ONLY: intentionally broken assertion so smoke runs show a failure.
-      await expect(
-        page.getByTestId("nonexistent-empty-submit-banner"),
-        "Expected an empty-submit banner that does not exist (intentional demo failure)",
-      ).toBeVisible({ timeout: 5000 });
 
+    // Assert that the page remains on the signup page and does not navigate to the dashboard
+    await expect(page).toHaveURL(/.*signup/);
+    await expect(page).not.toHaveURL(/.*dashboard/);
+
+    // Verify that a validation error message is displayed for empty fields.
+    // Based on the screenshot analysis, "Please fill out this field." appears for the Email field
+    // and is a general error for empty required fields.
+    await expect(page.getByText('Please fill out this field.')).toBeVisible();
   });
 });
-
