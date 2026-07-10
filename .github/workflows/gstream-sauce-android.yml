@@ -1,0 +1,61 @@
+name: GStream Android (Sauce Labs)
+
+# Runs GStream Appium Android specs on Sauce Labs.
+# Requires repo secrets: SAUCE_USERNAME, SAUCE_ACCESS_KEY
+# Optional repo var: GSTREAM_SAUCE_APP (default: storage:filename=gstream.apk)
+
+on:
+  workflow_dispatch:
+    inputs:
+      sauce_app:
+        description: "Sauce Storage app (storage:filename=... or storage:<id>)"
+        required: false
+        default: ""
+        type: string
+      device_name:
+        description: "Sauce device name"
+        required: false
+        default: "Google Pixel 7 GoogleAPI Emulator"
+        type: string
+      platform_version:
+        description: "Android platform version"
+        required: false
+        default: "14.0"
+        type: string
+
+run-name: "GStream Android @ Sauce (${{ inputs.device_name }} / ${{ inputs.platform_version }})"
+
+jobs:
+  gstream-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run GStream Android on Sauce
+        env:
+          APPIUM_PROVIDER: sauce
+          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+          INPUT_SAUCE_APP: ${{ inputs.sauce_app }}
+          VAR_SAUCE_APP: ${{ vars.GSTREAM_SAUCE_APP }}
+          SAUCE_DEVICE_NAME: ${{ inputs.device_name }}
+          SAUCE_PLATFORM_VERSION: ${{ inputs.platform_version }}
+          SAUCE_BUILD: gstream-gha-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          if [ -z "$SAUCE_USERNAME" ] || [ -z "$SAUCE_ACCESS_KEY" ]; then
+            echo "::error::Missing SAUCE_USERNAME or SAUCE_ACCESS_KEY secrets"
+            exit 1
+          fi
+          export GSTREAM_SAUCE_APP="${INPUT_SAUCE_APP:-${VAR_SAUCE_APP:-storage:filename=gstream.apk}}"
+          echo "Sauce app: $GSTREAM_SAUCE_APP"
+          echo "Device: $SAUCE_DEVICE_NAME ($SAUCE_PLATFORM_VERSION)"
+          echo "Build: $SAUCE_BUILD"
+          npm run test:gstream:android
