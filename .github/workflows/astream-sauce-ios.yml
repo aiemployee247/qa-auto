@@ -12,6 +12,14 @@ name: AStream iOS (Sauce Labs)
 #   5. Fallback storage:filename=astream.ipa
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'projects/astream/**'
+      - 'shared/mobile/**'
+      - '.github/workflows/astream-sauce-ios.yml'
+      - 'package.json'
+      - 'package-lock.json'
   workflow_dispatch:
     inputs:
       sauce_app:
@@ -40,7 +48,7 @@ on:
         default: "2.0.0"
         type: string
 
-run-name: "AStream iOS @ Sauce (${{ inputs.device_name }} / ${{ inputs.platform_version }})"
+run-name: "AStream iOS @ Sauce (${{ github.event_name == 'workflow_dispatch' && inputs.device_name || 'iPhone 15 Simulator' }} / ${{ github.event_name == 'workflow_dispatch' && inputs.platform_version || '17.0' }})"
 
 jobs:
   astream-ios:
@@ -61,8 +69,8 @@ jobs:
         env:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-          INPUT_SAUCE_APP: ${{ inputs.sauce_app }}
-          INPUT_IPA_URL: ${{ inputs.ipa_url }}
+          INPUT_SAUCE_APP: ${{ inputs.sauce_app || '' }}
+          INPUT_IPA_URL: ${{ inputs.ipa_url || '' }}
           VAR_SAUCE_APP: ${{ vars.ASTREAM_SAUCE_APP }}
           SAUCE_API: https://api.us-west-1.saucelabs.com
         run: |
@@ -143,9 +151,9 @@ jobs:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
           ASTREAM_SAUCE_APP: ${{ steps.sauce_app.outputs.app }}
-          SAUCE_DEVICE_NAME: ${{ inputs.device_name }}
-          SAUCE_PLATFORM_VERSION: ${{ inputs.platform_version }}
-          SAUCE_APPIUM_VERSION: ${{ inputs.appium_version }}
+          SAUCE_DEVICE_NAME: ${{ inputs.device_name || 'iPhone 15 Simulator' }}
+          SAUCE_PLATFORM_VERSION: ${{ inputs.platform_version || '17.0' }}
+          SAUCE_APPIUM_VERSION: ${{ inputs.appium_version || '2.0.0' }}
           SAUCE_BUILD: astream-ios-gha-${{ github.run_id }}-${{ github.run_attempt }}
           ASTREAM_BUNDLE_ID: com.astream.auth
         run: |

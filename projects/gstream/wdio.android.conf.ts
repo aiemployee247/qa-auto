@@ -18,7 +18,7 @@ const localAndroidCaps = {
   'appium:deviceName': process.env.ANDROID_DEVICE_NAME || 'Android Emulator',
   'appium:app': resolveAppPath(
     'GSTREAM_ANDROID_APP',
-    'apps/gstream/android/app-debug.apk',
+    'apps/gstream/android/app-release.apk',
   ),
   'appium:appPackage': 'com.gstream.auth',
   'appium:appActivity': '.MainActivity',
