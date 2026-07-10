@@ -12,17 +12,17 @@ test.describe("SCRUM-21: App Login", () => {
     // 1. Open https://preview-qa-review-ae007b75.viktor.space/login
     await login.open();
 
-    // 2. Enter invalid@test.local in email field
-    await login.emailInput.fill("invalid@test.local");
+    // 2. Enter test@example.com in email field (as per knowledge/login-testing.md for "Invalid credentials error")
+    await login.emailInput.fill("test@example.com");
 
-    // 3. Enter wrongpassword in password field
-    await login.passwordInput.fill("wrongpassword");
+    // 3. Enter wrong in password field (as per knowledge/login-testing.md for "Invalid credentials error")
+    await login.passwordInput.fill("wrong");
 
     // 4. Submit sign in
     await login.submitButton.click();
 
     // Expected result: An error message is visible; user remains on /login; URL does not contain /dashboard.
-    await expect(page.getByText(/invalid credentials/i)).toBeVisible();
+    await expect(page.getByText(/invalid credentials error/i)).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
     await expect(page.url()).not.toContain("/dashboard");
   });
