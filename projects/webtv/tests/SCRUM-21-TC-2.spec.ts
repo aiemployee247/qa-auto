@@ -12,7 +12,9 @@ test.describe("SCRUM-21: Login page navigation", () => {
     await login.open();
 
     // Activate the "Sign up" link
-    await login.signUpLink.click();
+    // The previous attempt failed because login.signUpLink was undefined.
+    // Using a direct getByRole locator to click the "Sign up" link.
+    await page.getByRole('link', { name: 'Sign up' }).click();
 
     // Browser navigates to /signup
     await expect(page).toHaveURL(/\/signup/);
