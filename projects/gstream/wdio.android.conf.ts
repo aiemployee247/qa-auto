@@ -22,11 +22,15 @@ const localAndroidCaps = {
   ),
   'appium:appPackage': 'com.gstream.auth',
   'appium:appActivity': '.MainActivity',
+  'appium:appWaitActivity': 'com.gstream.auth.MainActivity',
+  'appium:appWaitDuration': 60_000,
   'appium:autoGrantPermissions': true,
   'appium:newCommandTimeout': 240,
   'appium:adbExecTimeout': 120_000,
   'appium:androidInstallTimeout': 180_000,
   'appium:uiautomator2ServerLaunchTimeout': 120_000,
+  // Give React Native time to mount after splash
+  'appium:waitForIdleTimeout': 5_000,
 };
 
 const sauceAndroidCaps = {

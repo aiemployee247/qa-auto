@@ -21,17 +21,17 @@ export class GStreamLoginPage extends MobileBasePage {
   }
 
   async waitForReady() {
-    await this.waitForDisplayed(this.screen);
-    await this.waitForDisplayed(this.emailInput);
+    await this.waitForId('login-screen');
+    await this.waitForId('login-email');
   }
 
   async login(email: string, password: string) {
-    await this.setValue(this.emailInput, email);
-    await this.setValue(this.passwordInput, password);
-    await this.tap(this.submitButton);
+    await this.setValueById('login-email', email);
+    await this.setValueById('login-password', password);
+    await this.tapById('login-submit');
   }
 
   async openSignUp() {
-    await this.tap(this.goToSignUp);
+    await this.tapById('login-goto-signup');
   }
 }

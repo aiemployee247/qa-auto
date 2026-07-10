@@ -27,8 +27,8 @@ export class GStreamSignUpPage extends MobileBasePage {
   }
 
   async waitForReady() {
-    await this.waitForDisplayed(this.screen);
-    await this.waitForDisplayed(this.nameInput);
+    await this.waitForId('signup-screen');
+    await this.waitForId('signup-name');
   }
 
   async signUp(
@@ -37,10 +37,10 @@ export class GStreamSignUpPage extends MobileBasePage {
     password: string,
     confirmPassword = password,
   ) {
-    await this.setValue(this.nameInput, name);
-    await this.setValue(this.emailInput, email);
-    await this.setValue(this.passwordInput, password);
-    await this.setValue(this.confirmPasswordInput, confirmPassword);
-    await this.tap(this.submitButton);
+    await this.setValueById('signup-name', name);
+    await this.setValueById('signup-email', email);
+    await this.setValueById('signup-password', password);
+    await this.setValueById('signup-confirm-password', confirmPassword);
+    await this.tapById('signup-submit');
   }
 }

@@ -18,11 +18,11 @@ export class GStreamHomePage extends MobileBasePage {
   }
 
   async waitForReady() {
-    await this.waitForDisplayed(this.screen);
-    await this.waitForDisplayed(this.heading);
+    await this.waitForId('home-screen');
+    await this.waitForId('home-heading');
   }
 
   async logout() {
-    await this.tap(this.logoutButton);
+    await this.tapById('home-logout');
   }
 }

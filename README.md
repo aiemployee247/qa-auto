@@ -38,8 +38,9 @@ npx appium driver install uiautomator2
 npx appium driver install xcuitest
 
 # Put binaries in apps/ (or set paths in .env)
-#   apps/gstream/android/app-debug.apk
-#   apps/gstream/ios/GStream.app
+# Prefer a release/offline APK so the app does not wait on Metro:
+#   apps/gstream/android/app-release.apk
+#   apps/gstream/ios/GStream.app   # simulator .app for now; IPA later for Sauce
 
 # Terminal 1
 npm run appium
@@ -49,7 +50,15 @@ npm run test:gstream:android
 npm run test:gstream:ios
 ```
 
-Sauce Labs (later): set `APPIUM_PROVIDER=sauce`, `SAUCE_USERNAME`, `SAUCE_ACCESS_KEY`, and `GSTREAM_SAUCE_APP=storage:filename=...`.
+### Sauce Labs (next)
+
+1. Upload the APK/IPA to Sauce Storage.
+2. In `.env`:
+   - `APPIUM_PROVIDER=sauce`
+   - `SAUCE_USERNAME` / `SAUCE_ACCESS_KEY`
+   - `GSTREAM_SAUCE_APP=storage:filename=gstream.apk` (or the returned storage id)
+   - optional: `SAUCE_DEVICE_NAME`, `SAUCE_PLATFORM_VERSION`, `SAUCE_BUILD`
+3. Run the same npm scripts (`test:gstream:android` / `test:gstream:ios`).
 
 ## Conventions
 
