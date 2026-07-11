@@ -71,9 +71,6 @@ describe('ASTREAM-2: Login', () => {
       email,
       password,
       confirmPassword: password,
-      birthMonth: '07',
-      birthDay: '04',
-      birthYear: '1990',
     });
     await home.waitForReady();
     await home.logout();

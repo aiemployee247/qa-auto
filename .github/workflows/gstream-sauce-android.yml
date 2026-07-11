@@ -62,7 +62,7 @@ jobs:
             echo "::error::Missing SAUCE_USERNAME or SAUCE_ACCESS_KEY secrets"
             exit 1
           fi
-          export GSTREAM_SAUCE_APP="${INPUT_SAUCE_APP:-${VAR_SAUCE_APP:-storage:filename=gstream.apk}}"
+          export GSTREAM_SAUCE_APP="${INPUT_SAUCE_APP:-${VAR_SAUCE_APP:-storage:4dbbc656-87f3-4e0e-a47c-a48b0cefe732}}"
           echo "Sauce app: $GSTREAM_SAUCE_APP"
           echo "Device: $SAUCE_DEVICE_NAME ($SAUCE_PLATFORM_VERSION)"
           echo "Build: $SAUCE_BUILD"

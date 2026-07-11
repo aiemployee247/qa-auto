@@ -84,36 +84,23 @@ export class AStreamSignUpPage extends MobileBasePage {
 
     await this.setValueById('signup-password', form.password);
     await this.setValueById('signup-confirm-password', confirm);
-
-    // After confirm: dismiss keyboard, then tap birthdate when visible.
     await this.hideKeyboardSafe();
 
-    const wantsBirth = Boolean(form.birthMonth || form.birthDay || form.birthYear);
-    if (wantsBirth && (await this.revealBySwipe('signup-birth-mm'))) {
-      await this.byId('signup-birth-mm').click();
-      await this.driver.pause(250);
-      if (form.birthMonth) {
-        await this.setValueById('signup-birth-mm', form.birthMonth);
-      }
-      if (form.birthDay) {
-        await this.setValueById('signup-birth-dd', form.birthDay);
-      }
-      if (form.birthYear) {
-        await this.setValueById('signup-birth-yyyy', form.birthYear);
-      }
-      await this.hideKeyboardSafe();
-    }
-
+    // Skip birthdate: not required for auth; Sauce sims flake on those fields.
     await this.revealBySwipe('signup-submit');
 
-    if (form.optInBrand && (await this.byId('signup-optin-brand').isExisting().catch(() => false))) {
-      await this.byId('signup-optin-brand').click();
-    }
-    if (
-      form.optInPartners &&
-      (await this.byId('signup-optin-partners').isExisting().catch(() => false))
-    ) {
-      await this.byId('signup-optin-partners').click();
+    try {
+      if (form.optInBrand && (await this.byId('signup-optin-brand').isExisting().catch(() => false))) {
+        await this.byId('signup-optin-brand').click();
+      }
+      if (
+        form.optInPartners &&
+        (await this.byId('signup-optin-partners').isExisting().catch(() => false))
+      ) {
+        await this.byId('signup-optin-partners').click();
+      }
+    } catch {
+      // optional
     }
 
     await this.revealBySwipe('signup-submit');

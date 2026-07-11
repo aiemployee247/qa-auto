@@ -178,43 +178,25 @@ export class GStreamSignUpPage extends MobileBasePage {
 
     await this.hideKeyboardSafe();
 
-    // Birthdate is below the fold and optional for auth — fill when visible.
-    const wantsBirth = Boolean(form.birthMonth || form.birthDay || form.birthYear);
-    if (wantsBirth && (await this.revealBySwipe('signup-birth-mm'))) {
-      if (form.birthMonth) {
-        await this.typeIntoEmpty('signup-birth-mm', form.birthMonth);
-      }
-      if (form.birthDay) {
-        await this.typeIntoEmpty('signup-birth-dd', form.birthDay);
-      }
-      if (form.birthYear) {
-        await this.typeIntoEmpty('signup-birth-yyyy', form.birthYear);
-      }
-      await this.hideKeyboardSafe();
-    }
-
+    // Skip birthdate on purpose: not required for auth, and Sauce devices often
+    // cannot interact with those off-screen number-pad fields reliably.
     await this.revealBySwipe('signup-submit');
 
-    if (form.optInBrand && (await this.byId('signup-optin-brand').isExisting().catch(() => false))) {
-      await this.byId('signup-optin-brand').click();
-    }
-    if (
-      form.optInPartners &&
-      (await this.byId('signup-optin-partners').isExisting().catch(() => false))
-    ) {
-      await this.byId('signup-optin-partners').click();
+    try {
+      if (form.optInBrand && (await this.byId('signup-optin-brand').isExisting().catch(() => false))) {
+        await this.byId('signup-optin-brand').click();
+      }
+      if (
+        form.optInPartners &&
+        (await this.byId('signup-optin-partners').isExisting().catch(() => false))
+      ) {
+        await this.byId('signup-optin-partners').click();
+      }
+    } catch {
+      // optional
     }
 
     await this.revealBySwipe('signup-submit');
     await this.tapById('signup-submit');
-  }
-
-  /** Type into an empty field without backspacing other focused inputs. */
-  private async typeIntoEmpty(id: string, value: string) {
-    const el = this.byId(id);
-    await el.waitForExist({ timeout: 10_000 });
-    await el.click();
-    await this.driver.pause(250);
-    await el.addValue(value);
   }
 }

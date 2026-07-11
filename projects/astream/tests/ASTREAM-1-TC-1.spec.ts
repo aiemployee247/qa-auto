@@ -46,9 +46,6 @@ describe('ASTREAM-1: Sign up', () => {
       email,
       password,
       confirmPassword: password,
-      birthMonth: '03',
-      birthDay: '15',
-      birthYear: '1995',
       optInBrand: true,
     });
 

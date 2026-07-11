@@ -137,8 +137,8 @@ jobs:
             if APP=$(resolve_latest_astream_ipa); then
               echo "Resolved latest storage file → $APP"
             else
-              echo "::warning::Could not resolve latest astream.ipa; falling back to storage:filename=astream.ipa"
-              APP="storage:filename=astream.ipa"
+              echo "::warning::Could not resolve latest astream.ipa; falling back to latest uploaded astream.app.zip"
+              APP="storage:75e99790-894f-4c6b-a5ec-8539748e4d5d"
             fi
           fi
 
