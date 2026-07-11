@@ -1,17 +1,17 @@
 /**
- * GStream — Login validation + happy path
+ * Mobile App — Login validation + happy path
  * Flow: Welcome → Sign in → (signup setup) → Log out → Continue → Dashboard
- * Jira: GSTREAM-2 — Xray TC-1 / TC-2
+ * Jira: MOBILE-APP-2 — Xray TC-1 / TC-2
  */
-describe('GSTREAM-2: Login', () => {
+describe('MOBILE-APP-2: Login', () => {
   it('TC-1: invalid credentials show an error and do not sign in', async () => {
-    const { GStreamWelcomePage } = await import('../pages/WelcomePage');
-    const { GStreamLoginPage } = await import('../pages/LoginPage');
-    const { GStreamHomePage } = await import('../pages/HomePage');
+    const { MobileAppWelcomePage } = await import('../pages/WelcomePage');
+    const { MobileAppLoginPage } = await import('../pages/LoginPage');
+    const { MobileAppHomePage } = await import('../pages/HomePage');
 
-    const welcome = new GStreamWelcomePage(browser);
-    const login = new GStreamLoginPage(browser);
-    const home = new GStreamHomePage(browser);
+    const welcome = new MobileAppWelcomePage(browser);
+    const login = new MobileAppLoginPage(browser);
+    const home = new MobileAppHomePage(browser);
 
     if (await welcome.isShowing()) {
       await welcome.getStarted();
@@ -29,17 +29,17 @@ describe('GSTREAM-2: Login', () => {
   });
 
   it('TC-2: valid credentials sign in and show dashboard', async () => {
-    const { GStreamLoginPage } = await import('../pages/LoginPage');
-    const { GStreamSignUpPage } = await import('../pages/SignUpPage');
-    const { GStreamHomePage } = await import('../pages/HomePage');
+    const { MobileAppLoginPage } = await import('../pages/LoginPage');
+    const { MobileAppSignUpPage } = await import('../pages/SignUpPage');
+    const { MobileAppHomePage } = await import('../pages/HomePage');
 
-    const login = new GStreamLoginPage(browser);
-    const signup = new GStreamSignUpPage(browser);
-    const home = new GStreamHomePage(browser);
+    const login = new MobileAppLoginPage(browser);
+    const signup = new MobileAppSignUpPage(browser);
+    const home = new MobileAppHomePage(browser);
 
     const firstName = 'Login';
     const lastName = 'Tester';
-    const email = `gstream.login.${Date.now()}@test.local`;
+    const email = `mobile.login.${Date.now()}@test.local`;
     const password = 'Passw0rd!';
 
     await login.waitForReady();

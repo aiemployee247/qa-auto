@@ -1,7 +1,7 @@
 import { MobileBasePage } from '@shared/mobile/MobileBasePage';
 
 /** Post-auth Dashboard tab + Profile tab navigation. */
-export class GStreamHomePage extends MobileBasePage {
+export class MobileAppHomePage extends MobileBasePage {
   // Dashboard (default tab)
   get screen() {
     return this.byId('home-screen');

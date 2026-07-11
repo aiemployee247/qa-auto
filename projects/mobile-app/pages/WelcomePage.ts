@@ -1,7 +1,7 @@
 import { MobileBasePage } from '@shared/mobile/MobileBasePage';
 
 /** First screen after install / logout (MLB-style Welcome). */
-export class GStreamWelcomePage extends MobileBasePage {
+export class MobileAppWelcomePage extends MobileBasePage {
   get screen() {
     return this.byId('welcome-screen');
   }

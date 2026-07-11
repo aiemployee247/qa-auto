@@ -1,6 +1,6 @@
 import { MobileBasePage } from '@shared/mobile/MobileBasePage';
 
-export class GStreamLoginPage extends MobileBasePage {
+export class MobileAppLoginPage extends MobileBasePage {
   get screen() {
     return this.byId('login-screen');
   }

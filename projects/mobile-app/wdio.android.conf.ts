@@ -17,9 +17,10 @@ const localAndroidCaps = {
   'appium:automationName': 'UiAutomator2',
   'appium:deviceName': process.env.ANDROID_DEVICE_NAME || 'Android Emulator',
   'appium:app': resolveAppPath(
-    'GSTREAM_ANDROID_APP',
-    'apps/gstream/android/app-release.apk',
+    'MOBILE_APP_ANDROID_APP',
+    'apps/mobile-app/android/app-release.apk',
   ),
+  // App under test is still the GStream Android brand build.
   'appium:appPackage': 'com.gstream.auth',
   'appium:appActivity': '.MainActivity',
   'appium:appWaitActivity': 'com.gstream.auth.MainActivity',
@@ -29,7 +30,6 @@ const localAndroidCaps = {
   'appium:adbExecTimeout': 120_000,
   'appium:androidInstallTimeout': 180_000,
   'appium:uiautomator2ServerLaunchTimeout': 120_000,
-  // Give React Native time to mount after splash
   'appium:waitForIdleTimeout': 5_000,
 };
 
@@ -37,13 +37,14 @@ const sauceAndroidCaps = {
   platformName: 'Android',
   'appium:automationName': 'UiAutomator2',
   'appium:app':
-    process.env.GSTREAM_SAUCE_APP || 'storage:filename=gstream.apk',
+    process.env.MOBILE_APP_SAUCE_APP ||
+    'storage:4dbbc656-87f3-4e0e-a47c-a48b0cefe732',
   'appium:deviceName':
     process.env.SAUCE_DEVICE_NAME || 'Google Pixel 7 GoogleAPI Emulator',
   'appium:platformVersion': process.env.SAUCE_PLATFORM_VERSION || '14.0',
   'sauce:options': {
-    name: 'gstream-android',
-    build: process.env.SAUCE_BUILD || `gstream-${Date.now()}`,
+    name: 'mobile-app-android',
+    build: process.env.SAUCE_BUILD || `mobile-app-${Date.now()}`,
     appiumVersion: process.env.SAUCE_APPIUM_VERSION || '2.0.0',
   },
 };

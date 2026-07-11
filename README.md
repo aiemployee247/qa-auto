@@ -11,8 +11,8 @@ shared/                  # shared page objects (web + mobile)
 projects/
   webtv/                 # WebTV (Playwright)
   uctv/                  # UCTV (Playwright)
-  gstream/               # GStream native (Appium) — login/signup
-  astream/               # AStream native (Appium) — scaffold
+  mobile-app/            # Mobile app native (Appium) — login/signup
+  astream/               # AStream native (Appium)
   ios/                   # legacy manual Xray notes
 apps/                    # local APK / IPA / .app binaries (gitignored)
 .github/workflows/       # CI
@@ -39,15 +39,15 @@ npx appium driver install xcuitest
 
 # Put binaries in apps/ (or set paths in .env)
 # Prefer a release/offline APK so the app does not wait on Metro:
-#   apps/gstream/android/app-release.apk
-#   apps/gstream/ios/GStream.app   # simulator .app for now; IPA later for Sauce
+#   apps/mobile-app/android/app-release.apk
+#   apps/mobile-app/ios/GStream.app   # simulator .app for now; IPA later for Sauce
 
 # Terminal 1
 npm run appium
 
 # Terminal 2 — emulator/simulator must be running
-npm run test:gstream:android
-npm run test:gstream:ios
+npm run test:mobile-app:android
+npm run test:mobile-app:ios
 ```
 
 ### Sauce Labs (next)
@@ -56,9 +56,9 @@ npm run test:gstream:ios
 2. In `.env`:
    - `APPIUM_PROVIDER=sauce`
    - `SAUCE_USERNAME` / `SAUCE_ACCESS_KEY`
-   - `GSTREAM_SAUCE_APP=storage:filename=gstream.apk` (or the returned storage id)
+   - `MOBILE_APP_SAUCE_APP=storage:filename=gstream.apk` (or the returned storage id)
    - optional: `SAUCE_DEVICE_NAME`, `SAUCE_PLATFORM_VERSION`, `SAUCE_BUILD`
-3. Run the same npm scripts (`test:gstream:android` / `test:gstream:ios`).
+3. Run the same npm scripts (`test:mobile-app:android` / `test:mobile-app:ios`).
 
 ## Conventions
 
@@ -71,6 +71,6 @@ npm run test:gstream:ios
 | Spec | Platform | Case |
 |---|---|---|
 | `projects/webtv/tests/DEMO-2-TC-1.spec.ts` | WebTV | invalid login |
-| `projects/gstream/tests/GSTREAM-1-TC-1.spec.ts` | GStream | signup → home |
-| `projects/gstream/tests/GSTREAM-2-TC-1.spec.ts` | GStream | login invalid + valid |
-| `projects/astream/tests/*` | AStream | scaffold (needs app binary) |
+| `projects/mobile-app/tests/MOBILE-APP-1-TC-1.spec.ts` | Mobile App | signup → home |
+| `projects/mobile-app/tests/MOBILE-APP-2-TC-1.spec.ts` | Mobile App | login invalid + valid |
+| `projects/astream/tests/*` | AStream | login/signup |

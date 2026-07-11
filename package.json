@@ -12,8 +12,8 @@
     "report": "playwright show-report",
     "typecheck": "tsc --noEmit",
     "appium": "appium --port 4723",
-    "test:gstream:android": "wdio run projects/gstream/wdio.android.conf.ts",
-    "test:gstream:ios": "wdio run projects/gstream/wdio.ios.conf.ts",
+    "test:mobile-app:android": "wdio run projects/mobile-app/wdio.android.conf.ts",
+    "test:mobile-app:ios": "wdio run projects/mobile-app/wdio.ios.conf.ts",
     "test:astream:android": "wdio run projects/astream/wdio.android.conf.ts",
     "test:astream:ios": "wdio run projects/astream/wdio.ios.conf.ts"
   },

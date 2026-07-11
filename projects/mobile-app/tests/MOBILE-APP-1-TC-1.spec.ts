@@ -1,23 +1,23 @@
 /**
- * GStream — Signup happy path
+ * Mobile App — Signup happy path
  * Flow: Welcome → Sign in → Create Account → Dashboard + Profile tabs
- * Jira: GSTREAM-1 — Xray TC-1
+ * Jira: MOBILE-APP-1 — Xray TC-1
  */
-describe('GSTREAM-1: Sign up', () => {
+describe('MOBILE-APP-1: Sign up', () => {
   it('TC-1: Welcome → Create Account → Dashboard and Profile', async () => {
-    const { GStreamWelcomePage } = await import('../pages/WelcomePage');
-    const { GStreamLoginPage } = await import('../pages/LoginPage');
-    const { GStreamSignUpPage } = await import('../pages/SignUpPage');
-    const { GStreamHomePage } = await import('../pages/HomePage');
+    const { MobileAppWelcomePage } = await import('../pages/WelcomePage');
+    const { MobileAppLoginPage } = await import('../pages/LoginPage');
+    const { MobileAppSignUpPage } = await import('../pages/SignUpPage');
+    const { MobileAppHomePage } = await import('../pages/HomePage');
 
-    const welcome = new GStreamWelcomePage(browser);
-    const login = new GStreamLoginPage(browser);
-    const signup = new GStreamSignUpPage(browser);
-    const home = new GStreamHomePage(browser);
+    const welcome = new MobileAppWelcomePage(browser);
+    const login = new MobileAppLoginPage(browser);
+    const signup = new MobileAppSignUpPage(browser);
+    const home = new MobileAppHomePage(browser);
 
-    const firstName = 'GStream';
+    const firstName = 'Mobile';
     const lastName = 'Tester';
-    const email = `gstream.user.${Date.now()}@test.local`;
+    const email = `mobile.user.${Date.now()}@test.local`;
     const password = 'Passw0rd!';
 
     // Welcome (first screen after install)

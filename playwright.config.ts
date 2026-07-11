@@ -49,7 +49,7 @@ export default defineConfig({
         baseURL: process.env.UCTV_BASE_URL || "",
       },
     },
-    // Native apps (gstream / astream) use Appium + WebdriverIO —
-    // see projects/gstream and projects/astream (npm run test:gstream:android).
+    // Native apps (mobile-app / astream) use Appium + WebdriverIO —
+    // see projects/mobile-app and projects/astream (npm run test:mobile-app:android).
   ],
 });

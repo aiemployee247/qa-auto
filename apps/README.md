@@ -1,6 +1,6 @@
 # Place local app binaries here (gitignored).
 # Example:
-#   apps/gstream/android/app-debug.apk
-#   apps/gstream/ios/GStream.app
+#   apps/mobile-app/android/app-release.apk
+#   apps/mobile-app/ios/GStream.app
 #   apps/astream/android/app-debug.apk
 #   apps/astream/ios/AStream.app

@@ -13,7 +13,7 @@ export type SignUpForm = {
   optInPartners?: boolean;
 };
 
-export class GStreamSignUpPage extends MobileBasePage {
+export class MobileAppSignUpPage extends MobileBasePage {
   get screen() {
     return this.byId('signup-screen');
   }

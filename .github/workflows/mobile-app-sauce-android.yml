@@ -1,16 +1,16 @@
-name: GStream Android (Sauce Labs)
+name: Mobile App Android (Sauce Labs)
 
-# Runs GStream Appium Android specs on Sauce Labs.
+# Runs mobile-app Appium Android specs on Sauce Labs.
 # Requires repo secrets: SAUCE_USERNAME, SAUCE_ACCESS_KEY
-# Optional repo var: GSTREAM_SAUCE_APP (default: storage:filename=gstream.apk)
+# Optional repo var: MOBILE_APP_SAUCE_APP
 
 on:
   push:
     branches: [main]
     paths:
-      - 'projects/gstream/**'
+      - 'projects/mobile-app/**'
       - 'shared/mobile/**'
-      - '.github/workflows/gstream-sauce-android.yml'
+      - '.github/workflows/mobile-app-sauce-android.yml'
       - 'package.json'
       - 'package-lock.json'
   workflow_dispatch:
@@ -31,10 +31,10 @@ on:
         default: "14.0"
         type: string
 
-run-name: "GStream Android @ Sauce (${{ github.event_name == 'workflow_dispatch' && inputs.device_name || 'Google Pixel 7 GoogleAPI Emulator' }} / ${{ github.event_name == 'workflow_dispatch' && inputs.platform_version || '14.0' }})"
+run-name: "Mobile App Android @ Sauce (${{ github.event_name == 'workflow_dispatch' && inputs.device_name || 'Google Pixel 7 GoogleAPI Emulator' }} / ${{ github.event_name == 'workflow_dispatch' && inputs.platform_version || '14.0' }})"
 
 jobs:
-  gstream-android:
+  mobile-app-android:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -47,23 +47,23 @@ jobs:
       - name: Install dependencies
         run: npm ci || npm install
 
-      - name: Run GStream Android on Sauce
+      - name: Run Mobile App Android on Sauce
         env:
           APPIUM_PROVIDER: sauce
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
           INPUT_SAUCE_APP: ${{ inputs.sauce_app || '' }}
-          VAR_SAUCE_APP: ${{ vars.GSTREAM_SAUCE_APP }}
+          VAR_SAUCE_APP: ${{ vars.MOBILE_APP_SAUCE_APP }}
           SAUCE_DEVICE_NAME: ${{ inputs.device_name || 'Google Pixel 7 GoogleAPI Emulator' }}
           SAUCE_PLATFORM_VERSION: ${{ inputs.platform_version || '14.0' }}
-          SAUCE_BUILD: gstream-gha-${{ github.run_id }}-${{ github.run_attempt }}
+          SAUCE_BUILD: mobile-app-gha-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           if [ -z "$SAUCE_USERNAME" ] || [ -z "$SAUCE_ACCESS_KEY" ]; then
             echo "::error::Missing SAUCE_USERNAME or SAUCE_ACCESS_KEY secrets"
             exit 1
           fi
-          export GSTREAM_SAUCE_APP="${INPUT_SAUCE_APP:-${VAR_SAUCE_APP:-storage:4dbbc656-87f3-4e0e-a47c-a48b0cefe732}}"
-          echo "Sauce app: $GSTREAM_SAUCE_APP"
+          export MOBILE_APP_SAUCE_APP="${INPUT_SAUCE_APP:-${VAR_SAUCE_APP:-storage:4dbbc656-87f3-4e0e-a47c-a48b0cefe732}}"
+          echo "Sauce app: $MOBILE_APP_SAUCE_APP"
           echo "Device: $SAUCE_DEVICE_NAME ($SAUCE_PLATFORM_VERSION)"
           echo "Build: $SAUCE_BUILD"
-          npm run test:gstream:android
+          npm run test:mobile-app:android

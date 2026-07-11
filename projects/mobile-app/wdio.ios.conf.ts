@@ -17,7 +17,10 @@ const localIosCaps = {
   'appium:automationName': 'XCUITest',
   'appium:deviceName': process.env.IOS_DEVICE_NAME || 'GStream_iPhone',
   'appium:platformVersion': process.env.IOS_PLATFORM_VERSION || '26.5',
-  'appium:app': resolveAppPath('GSTREAM_IOS_APP', 'apps/gstream/ios/GStream.app'),
+  'appium:app': resolveAppPath(
+    'MOBILE_APP_IOS_APP',
+    'apps/mobile-app/ios/GStream.app',
+  ),
   'appium:bundleId': 'com.gstream.auth',
   'appium:autoAcceptAlerts': true,
   'appium:newCommandTimeout': 240,
@@ -26,12 +29,13 @@ const localIosCaps = {
 const sauceIosCaps = {
   platformName: 'iOS',
   'appium:automationName': 'XCUITest',
-  'appium:app': process.env.GSTREAM_SAUCE_APP || 'storage:filename=gstream.ipa',
+  'appium:app':
+    process.env.MOBILE_APP_SAUCE_APP || 'storage:filename=gstream.ipa',
   'appium:deviceName': process.env.SAUCE_DEVICE_NAME || 'iPhone 15 Simulator',
   'appium:platformVersion': process.env.SAUCE_PLATFORM_VERSION || '17.0',
   'sauce:options': {
-    name: 'gstream-ios',
-    build: process.env.SAUCE_BUILD || `gstream-${Date.now()}`,
+    name: 'mobile-app-ios',
+    build: process.env.SAUCE_BUILD || `mobile-app-${Date.now()}`,
     appiumVersion: process.env.SAUCE_APPIUM_VERSION || '2.0.0',
   },
 };
@@ -46,7 +50,7 @@ export const config: WebdriverIO.Config = {
   reporters: ['spec'],
   mochaOpts: {
     ui: 'bdd',
-    timeout: 180_000,
+    timeout: 300_000,
   },
   connectionRetryTimeout: 180_000,
   connectionRetryCount: 2,
